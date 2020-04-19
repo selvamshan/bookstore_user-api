@@ -2,8 +2,16 @@ package users
 
 import (
 	"strings"
-
+    "regexp"
 	"github.com/selvamshan/bookstore_user-api/utils/errors"
+)
+
+var (
+	re = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+)
+
+const (
+	StatusActive="active"
 )
 
 type User struct {
@@ -12,14 +20,47 @@ type User struct {
 	LastName 	string `json:"last_name"`
 	Email 		string `json:"email"`
 	DateCreated string `json:"date_created"`
+	Status      string `json:"status"`
+	Password    string  `json:"password"`
 }
+
+type Users []User
 
 
 func (user *User) Validate() *errors.RestErr {
-	user.Email =strings.TrimSpace(strings.ToLower(user.Email))
+    user.TrimSpaceInNames()
+    if err := user.ValidateEmail(); err != nil {
+		return err
+	}
+	if err := user.ValidatePassword(); err != nil {
+		return err
+	}
+	
+	return nil
+}
+
+func (user *User) TrimSpaceInNames() {
+	user.FirstName = strings.TrimSpace(user.FirstName)
+    user.LastName = strings.TrimSpace(user.LastName)
+}
+
+
+func (user *User) ValidateEmail() *errors.RestErr {
+	user.Email = strings.TrimSpace(strings.ToLower(user.Email))
 	if user.Email == ""{
 		return errors.NewBadRequestError("invalid email address")
+	}
+	if !re.MatchString(user.Email) {
+		// fmt.Println(user.Email)
+		return errors.NewBadRequestError("invalid email address")	
 	}
 	return nil
 }
 
+func (user *User) ValidatePassword() *errors.RestErr {
+	user.Password = strings.TrimSpace(user.Password)
+	if user.Password == "" {
+		return errors.NewBadRequestError("invalid password")	
+	}
+	return nil
+}
