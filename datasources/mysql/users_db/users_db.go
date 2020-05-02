@@ -3,11 +3,11 @@ package users_db
 import(
 	"os"
 	"fmt"
-	"log"
+	//"log"
 	"database/sql"
 	"github.com/go-sql-driver/mysql"
-	_ "github.com/joho/godotenv/autoload"
-	"github.com/federicoleon/bookstore_utils-go/logger"
+	_ "github.com/joho/godotenv/autoload"	
+	"github.com/selvamshan/bookstore_user-api/logger"
 )
 
 
@@ -34,5 +34,6 @@ func init() {
 	}
 	
 	mysql.SetLogger(logger.GetLogger())
-	log.Println("database successfully configured")
+	//log.Println("database successfully configured")
+	logger.Info("database successfully configured")
 }
