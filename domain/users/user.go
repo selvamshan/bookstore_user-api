@@ -27,7 +27,7 @@ type User struct {
 type Users []User
 
 
-func (user *User) Validate() *rest_errors.RestErr {
+func (user *User) Validate() rest_errors.RestErr {
     user.TrimSpaceInNames()
     if err := user.ValidateEmail(); err != nil {
 		return err
@@ -45,7 +45,7 @@ func (user *User) TrimSpaceInNames() {
 }
 
 
-func (user *User) ValidateEmail() *rest_errors.RestErr {
+func (user *User) ValidateEmail() rest_errors.RestErr {
 	user.Email = strings.TrimSpace(strings.ToLower(user.Email))
 	if user.Email == ""{
 		return rest_errors.NewBadRequestError("invalid email address")
@@ -57,7 +57,7 @@ func (user *User) ValidateEmail() *rest_errors.RestErr {
 	return nil
 }
 
-func (user *User) ValidatePassword() *rest_errors.RestErr {
+func (user *User) ValidatePassword() rest_errors.RestErr {
 	user.Password = strings.TrimSpace(user.Password)
 	if user.Password == "" {
 		return rest_errors.NewBadRequestError("invalid password")	

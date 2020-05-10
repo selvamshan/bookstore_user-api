@@ -7,7 +7,7 @@ import(
 	"database/sql"
 	"github.com/go-sql-driver/mysql"
 	_ "github.com/joho/godotenv/autoload"	
-	"github.com/selvamshan/bookstore_user-api/logger"
+	"github.com/selvamshan/bookstore_utils-go/logger"
 )
 
 

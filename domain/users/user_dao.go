@@ -8,7 +8,7 @@ import (
 	"github.com/selvamshan/bookstore_utils-go/rest_errors"	
 	"github.com/selvamshan/bookstore_user-api/utils/mysql_utils"
 	"github.com/selvamshan/bookstore_user-api/datasources/mysql/users_db"
-	"github.com/selvamshan/bookstore_user-api/logger"
+	"github.com/selvamshan/bookstore_utils-go/logger"
 )
 
 const(
@@ -25,7 +25,7 @@ var (
 	userDB = make(map[int64]*User)
 )
 
-func (user *User) Get(method string) *rest_errors.RestErr{
+func (user *User) Get(method string) rest_errors.RestErr{
 	stmt, err := users_db.Client.Prepare(queryGetUser)
 	if err != nil {
 		logger.Error(fmt.Sprintf("error when trying to prepare %s user statment", method), err)
@@ -43,7 +43,7 @@ func (user *User) Get(method string) *rest_errors.RestErr{
 	return nil
 }
 
-func (user *User) Save() *rest_errors.RestErr {
+func (user *User) Save() rest_errors.RestErr {
 
 	stmt, err := users_db.Client.Prepare(queryInsertUser)
 	if err != nil {
@@ -71,7 +71,7 @@ func (user *User) Save() *rest_errors.RestErr {
 	return nil
 }
 
-func (user *User) Update() *rest_errors.RestErr {
+func (user *User) Update() rest_errors.RestErr {
 	stmt, err := users_db.Client.Prepare(queryUpdateUser)
 	if err != nil {
 		logger.Error("error when trying to prepare update user statment", err)
@@ -88,7 +88,7 @@ func (user *User) Update() *rest_errors.RestErr {
 }
 
 
-func (user *User) Delete() *rest_errors.RestErr {
+func (user *User) Delete() rest_errors.RestErr {
 	stmt, err := users_db.Client.Prepare(queryDeleteUser)
 	if err != nil {
 		logger.Error("error when trying to prepare delete user stmt", err)
@@ -105,7 +105,7 @@ func (user *User) Delete() *rest_errors.RestErr {
 	return nil
 }
 
-func (user *User) FindByStatus(status string) ([]User, *rest_errors.RestErr) {
+func (user *User) FindByStatus(status string) ([]User, rest_errors.RestErr) {
 	stmt, err := users_db.Client.Prepare(queryFindUserByStatus)
 	if err != nil {
 		logger.Error("error when trying to prepare find by status user stmt", err)
@@ -138,7 +138,7 @@ func (user *User) FindByStatus(status string) ([]User, *rest_errors.RestErr) {
 }
 
 
-func (user *User) FindByEmailAndPassword() *rest_errors.RestErr{
+func (user *User) FindByEmailAndPassword() rest_errors.RestErr{
 	stmt, err := users_db.Client.Prepare(queryFindByEmailAndPassword)
 	if err != nil {
 		logger.Error("error when trying to prepare user by email and passwd statment", err)
@@ -148,8 +148,9 @@ func (user *User) FindByEmailAndPassword() *rest_errors.RestErr{
 
 	result := stmt.QueryRow(user.Email, user.Password, StatusActive)
 	if getErr := result.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.DateCreated, &user.Status); getErr != nil {	
-		// return mysql_utils.ParseError(getErr)
+		//return mysql_utils.ParseError(getErr)	
 		if strings.Contains(getErr.Error(), mysql_utils.ErrorNoRow){
+			//fmt.Println(rest_errors.NewNotFoundError("no user found with given credintials"))
 			return rest_errors.NewNotFoundError("no user found with given credintials")
 		}
 		logger.Error("error when trying to scan row in user struct user by eamil and passwd", getErr)
